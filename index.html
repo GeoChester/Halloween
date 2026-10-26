@@ -72,6 +72,7 @@ button { font: inherit; cursor: pointer; }
 .vault { border-radius: 14px; padding: 22px 20px; text-align: center; display: grid; gap: 10px; justify-items: center; border: 2px dashed var(--line); color: var(--muted); }
 .vault h2 { font-family: var(--display); font-weight: 400; font-size: 32px; margin: 0; line-height: 1.1; }
 .vault p { margin: 0; }
+.vault .ask { font-size: 24px; color: var(--ink); }
 .vault.open { border: 2px solid var(--glow); background: radial-gradient(circle at 50% 0%, rgba(255,194,92,.16), transparent 70%), var(--ledger); color: var(--ink); animation: rise .6s ease; }
 .vault.open h2 { color: var(--glow); }
 @keyframes rise { from { transform: translateY(8px); opacity: .4 } to { transform: none; opacity: 1 } }
@@ -87,10 +88,25 @@ button { font: inherit; cursor: pointer; }
 .claim input[type="text"]:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; }
 .copy:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-.note { font-size: 15px; font-style: italic; }
+.note { font-size: 19px; font-style: italic; max-width: 40ch; }
 .err { color: var(--pumpkin); font-size: 15px; }
 .zzz { font-family: var(--display); font-size: 22px; color: var(--muted); letter-spacing: .1em; }
-footer { text-align: center; font-size: 15px; color: var(--muted); font-style: italic; }
+html, body { overflow-x: clip; }
+.final { display: flex; justify-content: center; border-top: 1px solid var(--line); padding-top: 14px; }
+.final label { justify-content: center; text-align: left; }
+.final .name { font-size: 20px; font-weight: 600; }
+.final input:checked ~ .name { text-decoration: none; color: var(--glow); }
+.fx { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 50; will-change: transform, opacity; }
+.fx-ghost { width: 34px; height: 40px; filter: drop-shadow(0 0 8px rgba(239,230,214,.55)); }
+.fx-spider { width: 46px; height: 46px; }
+.fx-spider .legs-a, .fx-spider .legs-b { transform-origin: 23px 23px; transform-box: view-box; animation: skitter .12s linear infinite alternate; }
+.fx-spider .legs-b { animation-direction: alternate-reverse; }
+@keyframes skitter { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
+.rattle { animation: rattle .08s linear 9; }
+@keyframes rattle { 0% { transform: translate(0,0) rotate(0); } 25% { transform: translate(-2px,1px) rotate(-1.5deg); } 50% { transform: translate(2px,-1px) rotate(1.5deg); } 75% { transform: translate(-1px,-1px) rotate(-1deg); } 100% { transform: translate(1px,1px) rotate(1deg); } }
+
+footer { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; text-align: center; font-size: 22px; color: var(--muted); font-style: italic; }
+.pumpkin { width: 30px; height: 28px; flex: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -115,8 +131,8 @@ footer { text-align: center; font-size: 15px; color: var(--muted); font-style: i
   <section class="vault" id="vault" aria-live="polite">
     <span class="zzz" aria-hidden="true">z z Z</span>
     <h2>Chester sleeps now.</h2>
-    <p>Have you found all the Tricks and Treats?</p>
-    <p class="note" id="vault-msg">Only when every last cache is in your paws should you write your caching name below and wake Chester. Scratch at his door too early and you'll get nothing but a yawn.</p>
+    <p class="ask">Have you found all the Tricks and Treats?</p>
+    <p class="note" id="vault-msg">Once you found all caches, check them off and enter your caching name to wake Chester.<br>Scratch at his door too early and you'll get nothing but a yawn.</p>
     <form class="claim" id="claim" novalidate>
       <label for="cacher">Your caching name</label>
       <input type="text" id="cacher" name="cacher" autocomplete="nickname" maxlength="60" placeholder="e.g. NightOwl42" disabled>
@@ -135,16 +151,17 @@ footer { text-align: center; font-size: 15px; color: var(--muted); font-style: i
       <div class="bar"><span id="bar"></span></div>
     </div>
     <ul id="list"></ul>
+    <div class="final"><label for="allFound"><input type="checkbox" id="allFound"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="#120d1c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="name">I found all Trick and Treat geocaches.</span></label></div>
     <div class="actions"><button class="ghost-btn" id="clear" type="button">Clear all</button></div>
   </section>
 
 
-  <footer>Happy haunting from Chester.</footer>
+  <footer><span>Happy haunting from Chester.</span><svg class="pumpkin" viewBox="0 0 32 30" aria-hidden="true"><path d="M16 7c-1-3 0-5 2-6" fill="none" stroke="#5a8a3a" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="9.5" cy="18" rx="7.5" ry="10" fill="#e8741f"/><ellipse cx="22.5" cy="18" rx="7.5" ry="10" fill="#e8741f"/><ellipse cx="16" cy="18" rx="8" ry="11" fill="#f2832b"/><path d="M16 8v20M10 9.5c-2 5-2 12 0 17M22 9.5c2 5 2 12 0 17" fill="none" stroke="#c75f14" stroke-width="1" opacity=".7"/></svg></footer>
 </main>
 
 <script>
 // Claims are emailed to the cache owner through FormSubmit (works once hosted, e.g. on GitHub Pages).
-const CLAIM_ENDPOINT = "https://formsubmit.co/ajax/radka.p.cz@gmail.com";
+const CLAIM_ENDPOINT = "https://formsubmit.co/ajax/b251905bb2f9806acad9aee4dba19b40";
 
 const caches = [
   "Riddle", "big and SMALL", "Shadow Theatre", "Spooky Potions", "Ghostsweeper",
@@ -164,6 +181,7 @@ caches.forEach((name, i) => {
 });
 
 const boxes = [...list.querySelectorAll("input")];
+const allFound = document.getElementById("allFound");
 const vault = document.getElementById("vault");
 const form = document.getElementById("claim");
 const nameInput = document.getElementById("cacher");
@@ -175,7 +193,7 @@ function update() {
   if (sent) return;
   const found = boxes.filter(b => b.checked).length;
   const total = boxes.length;
-  const all = found === total;
+  const all = found === total && allFound.checked;
   document.getElementById("count").textContent = `${found} of ${total}`;
   document.getElementById("bar").style.width = (found / total * 100) + "%";
   nameInput.disabled = !all;
@@ -186,7 +204,7 @@ function update() {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const name = nameInput.value.trim();
-  if (!name || boxes.some(b => !b.checked)) return;
+  if (!name || boxes.some(b => !b.checked) || !allFound.checked) return;
   err.hidden = true;
   wake.disabled = true;
   wake.textContent = "Waking Chester…";
@@ -209,6 +227,7 @@ form.addEventListener("submit", async (e) => {
     document.getElementById("sleepCat").hidden = true;
     document.getElementById("awakeCat").hidden = false;
     boxes.forEach(b => b.disabled = true);
+    allFound.disabled = true;
     document.getElementById("clear").disabled = true;
     vault.classList.add("open");
     vault.innerHTML = `
@@ -226,7 +245,203 @@ form.addEventListener("submit", async (e) => {
 
 nameInput.addEventListener("input", update);
 boxes.forEach(b => b.addEventListener("change", update));
-document.getElementById("clear").addEventListener("click", () => { boxes.forEach(b => b.checked = false); update(); });
-update();
+allFound.addEventListener("change", update);
+document.getElementById("clear").addEventListener("click", () => { boxes.forEach(b => b.checked = false); allFound.checked = false; update(); });
+// ---------- Effects for special caches ----------
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let actx = null;
+function audio() {
+  try {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+    return actx;
+  } catch (_) { return null; }
+}
+function noiseBuf(ac, secs, curve) {
+  const len = Math.floor(ac.sampleRate * secs);
+  const buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, curve);
+  return buf;
+}
+
+// Wavering "wooo"; called once on release and again as the ghost flees.
+function ghostSound(len = 2.6, peak = 0.12) {
+  const ac = audio(); if (!ac) return;
+  const t = ac.currentTime, out = ac.createGain();
+  out.gain.setValueAtTime(0, t);
+  out.gain.linearRampToValueAtTime(peak, t + 0.35);
+  out.gain.linearRampToValueAtTime(peak * 0.7, t + len * 0.6);
+  out.gain.exponentialRampToValueAtTime(0.0001, t + len);
+  const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1400;
+  out.connect(lp).connect(ac.destination);
+  const lfo = ac.createOscillator(), lfoGain = ac.createGain();
+  lfo.frequency.value = 5; lfoGain.gain.value = 24; lfo.connect(lfoGain);
+  [0, 7].forEach(detune => {
+    const o = ac.createOscillator(); o.type = "sine"; o.detune.value = detune;
+    o.frequency.setValueAtTime(320, t);
+    o.frequency.linearRampToValueAtTime(560, t + len * 0.25);
+    o.frequency.linearRampToValueAtTime(430, t + len * 0.6);
+    o.frequency.linearRampToValueAtTime(290, t + len);
+    lfoGain.connect(o.frequency); o.connect(out); o.start(t); o.stop(t + len + 0.1);
+  });
+  lfo.start(t); lfo.stop(t + len + 0.1);
+}
+
+// Dry bone clicks with hollow knocks, spread over `secs`.
+function boneSound(secs = 2.6) {
+  const ac = audio(); if (!ac) return;
+  const buf = noiseBuf(ac, 0.04, 6);
+  let t = ac.currentTime; const end = t + secs;
+  let i = 0;
+  while (t < end) {
+    const fade = 1 - (t - ac.currentTime) / secs * 0.6;
+    const src = ac.createBufferSource(); src.buffer = buf;
+    const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.Q.value = 7;
+    bp.frequency.value = 900 + Math.random() * 2600;
+    const g = ac.createGain(); g.gain.value = (0.35 + Math.random() * 0.45) * fade;
+    src.connect(bp).connect(g).connect(ac.destination); src.start(t);
+    if (i % 3 === 0) {
+      const o = ac.createOscillator(), og = ac.createGain();
+      o.type = "triangle"; o.frequency.value = 170 + Math.random() * 140;
+      og.gain.setValueAtTime(0.11 * fade, t); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+      o.connect(og).connect(ac.destination); o.start(t); o.stop(t + 0.08);
+    }
+    t += 0.025 + Math.random() * 0.06; i++;
+  }
+}
+
+// Tiny leg ticks; returns a function that plays one tick.
+function skitterTick() {
+  const ac = audio(); if (!ac) return;
+  if (!skitterTick.buf) skitterTick.buf = noiseBuf(ac, 0.012, 1);
+  const src = ac.createBufferSource(); src.buffer = skitterTick.buf;
+  const hp = ac.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 3000;
+  const g = ac.createGain(); g.gain.value = 0.05;
+  src.connect(hp).connect(g).connect(ac.destination); src.start();
+}
+
+// Shared mover: wanders inside the screen for WANDER ms, then runs off the nearest edge.
+const WANDER = 5600;
+const angDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
+function wanderer(el, w, h, startX, startY, opts) {
+  document.body.appendChild(el);
+  let x = startX, y = startY, heading = Math.random() * Math.PI * 2, speed = opts.speed;
+  let pause = 0, fleeing = false, fleeDir = null, t0 = performance.now(), last = t0, tick = 0;
+  function step(now) {
+    const dt = Math.min(50, now - last) / 16.67; last = now; tick++;
+    const age = now - t0;
+    const W = window.innerWidth, H = window.innerHeight;
+    if (!fleeing && age > WANDER) {
+      fleeing = true;
+      const cx = x + w / 2, cy = y + h / 2;
+      const d = [[cx, -1, 0], [W - cx, 1, 0], [cy, 0, -1], [H - cy, 0, 1]].sort((a, b) => a[0] - b[0])[0];
+      fleeDir = Math.atan2(d[2], d[1]);
+      opts.onFlee && opts.onFlee();
+    }
+    if (fleeing) {
+      heading += angDiff(fleeDir, heading) * 0.15 + (Math.random() - 0.5) * opts.jitter * 0.3;
+      speed = Math.min(speed + 0.35 * dt, opts.fleeSpeed);
+    } else if (pause > 0) {
+      pause -= dt;
+    } else {
+      heading += (Math.random() - 0.5) * opts.jitter;
+      if (Math.random() < opts.swerve) heading += (Math.random() - 0.5) * Math.PI * 1.4;
+      if (opts.pauses && Math.random() < 0.012) pause = 20 + Math.random() * 40;
+      // steer back in when near an edge
+      const m = 30;
+      if (x < m || x > W - w - m || y < m || y > H - h - m) {
+        const toCenter = Math.atan2(H / 2 - (y + h / 2), W / 2 - (x + w / 2));
+        heading += angDiff(toCenter, heading) * 0.2;
+      }
+    }
+    const moving = fleeing || pause <= 0;
+    if (moving) {
+      x += Math.cos(heading) * speed * dt; y += Math.sin(heading) * speed * dt;
+      opts.onMove && opts.onMove(tick);
+    }
+    opts.render(el, x, y, heading, age, fleeing, moving);
+    if (fleeing && (x < -w - 40 || x > W + 40 || y < -h - 40 || y > H + 40)) { el.remove(); return; }
+    if (age > WANDER + 8000) { el.remove(); return; }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+const GHOST_SVG = '<svg class="fx fx-ghost" viewBox="0 0 34 40" aria-hidden="true"><path d="M17 2C9 2 3 8 3 17v19l5-4 4.5 4 4.5-4 4.5 4 4.5-4 5 4V17C31 8 25 2 17 2z" fill="#efe6d6" fill-opacity=".92"/><ellipse cx="12.5" cy="16" rx="2.4" ry="3.2" fill="#120d1c"/><ellipse cx="21.5" cy="16" rx="2.4" ry="3.2" fill="#120d1c"/><ellipse cx="17" cy="24" rx="3" ry="3.6" fill="#120d1c"/></svg>';
+
+function releaseGhost(fromEl) {
+  ghostSound(2.8, 0.12);
+  if (reduceMotion) return;
+  const r = fromEl.getBoundingClientRect();
+  const wrap = document.createElement("div"); wrap.innerHTML = GHOST_SVG;
+  wanderer(wrap.firstChild, 34, 40, r.left + r.width / 2 - 17, r.top + r.height / 2 - 20, {
+    speed: 2.1, fleeSpeed: 11, jitter: 0.5, swerve: 0.02, pauses: false,
+    onFlee: () => ghostSound(1.8, 0.09),
+    render: (el, x, y, hd, age, fleeing) => {
+      const grow = Math.min(1, 0.3 + age / 500);
+      const bob = Math.sin(age / 260) * 4;
+      el.style.transform = `translate(${x}px, ${y + bob}px) rotate(${Math.cos(hd) * 14}deg) scale(${grow})`;
+      el.style.opacity = fleeing ? 0.85 : 0.95 + Math.sin(age / 400) * 0.05;
+    }
+  });
+}
+
+const SPIDER_SVG = '<svg class="fx fx-spider" viewBox="0 0 46 46" aria-hidden="true"><g stroke="#0b0812" stroke-width="2" stroke-linecap="round" fill="none"><g class="legs-a"><path d="M20 18l-6-8-5 2M20 22l-9-3-5 3M26 18l6-8 5 2M26 22l9-3 5 3"/></g><g class="legs-b"><path d="M20 25l-8 3-4 6M21 28l-5 7-1 6M26 25l8 3 4 6M25 28l5 7 1 6"/></g></g><ellipse cx="23" cy="30" rx="7" ry="9" fill="#1a1222" stroke="#a99bb8" stroke-width="1"/><circle cx="23" cy="18" r="5" fill="#1a1222" stroke="#a99bb8" stroke-width="1"/><circle cx="21.3" cy="16.4" r="1" fill="#f2832b"/><circle cx="24.7" cy="16.4" r="1" fill="#f2832b"/><path d="M23 26l-2 3 2 3 2-3z" fill="#f2832b" opacity=".8"/></svg>';
+
+function sendSpider(fromEl) {
+  audio();
+  const r = fromEl.getBoundingClientRect();
+  if (reduceMotion) { for (let i = 0; i < 12; i++) setTimeout(skitterTick, i * 60); return; }
+  const wrap = document.createElement("div"); wrap.innerHTML = SPIDER_SVG;
+  const spider = wrap.firstChild;
+  const legParts = spider.querySelectorAll(".legs-a,.legs-b");
+  wanderer(spider, 46, 46, r.left + r.width / 2 - 23, r.top + r.height / 2 - 23, {
+    speed: 2.4, fleeSpeed: 13, jitter: 0.35, swerve: 0.015, pauses: true,
+    onMove: (tick) => { if (tick % 4 === 0 && Math.random() < 0.8) skitterTick(); },
+    render: (el, x, y, hd, age, fleeing, moving) => {
+      legParts.forEach(l => l.style.animationPlayState = moving ? "running" : "paused");
+      el.style.transform = `translate(${x}px, ${y}px) rotate(${hd * 180 / Math.PI + 90}deg)`;
+    }
+  });
+}
+
+const BONE_SVG = '<svg viewBox="0 0 26 12" aria-hidden="true"><path d="M5 3.2a2.6 2.6 0 1 1 1.6 3.6h12.8a2.6 2.6 0 1 1 1.6 2 2.6 2.6 0 1 1-1.6-3.6H6.6A2.6 2.6 0 1 1 5 3.2z" fill="#efe6d6"/></svg>';
+
+function rattleBones(labelEl) {
+  boneSound(2.8);
+  if (reduceMotion) return;
+  labelEl.classList.remove("rattle"); void labelEl.offsetWidth; labelEl.classList.add("rattle");
+  setTimeout(() => labelEl.classList.remove("rattle"), 900);
+  const W = window.innerWidth, H = window.innerHeight;
+  for (let i = 0; i < 28; i++) {
+    setTimeout(() => {
+      const wrap = document.createElement("div"); wrap.innerHTML = BONE_SVG;
+      const b = wrap.firstChild; b.setAttribute("class", "fx fx-bone");
+      const size = 22 + Math.random() * 22;
+      b.style.width = size + "px"; b.style.height = size * 12 / 26 + "px";
+      document.body.appendChild(b);
+      let x = Math.random() * (W - size), y = -30, vy = 2 + Math.random() * 2.5, vx = (Math.random() - 0.5) * 1.2;
+      let rot = Math.random() * 360, vr = (Math.random() - 0.5) * 14, last = performance.now();
+      (function fall(now) {
+        const dt = Math.min(50, now - last) / 16.67; last = now;
+        vy += 0.09 * dt; x += vx * dt; y += vy * dt; rot += vr * dt;
+        b.style.transform = `translate(${x}px, ${y}px) rotate(${rot}deg)`;
+        if (y > H + 30) { b.remove(); return; }
+        requestAnimationFrame(fall);
+      })(last);
+    }, i * 90 + Math.random() * 60);
+  }
+}
+
+const effects = { "Jar of Souls": releaseGhost, "Web Tangle": sendSpider, "Skeleton Simon": rattleBones };
+boxes.forEach((b, i) => {
+  const fx = effects[caches[i]];
+  if (!fx) return;
+  b.addEventListener("change", () => {
+    if (!b.checked) return;
+    const label = b.closest("label");
+    fx(caches[i] === "Skeleton Simon" ? label : label.querySelector(".box"));
+  });
+});
 </script>
 </body></html>

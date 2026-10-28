@@ -1,17 +1,21 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Halloween: Bonus!</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Layout: a single haunted ledger card on a night sky, progress candle on top, coordinates sealed below until all 16 are ticked. Single dark look by choice. */
+[hidden] { display: none !important; }
 :root {
-  --night: #120d1c;
-  --ledger: #1d1529;
+  --night: #221a33;
+  --ledger: #2d2342;
   --ink: #efe6d6;
-  --muted: #a99bb8;
+  --muted: #b5a8c4;
   --pumpkin: #f2832b;
   --glow: #ffc25c;
-  --line: #3a2d4c;
+  --line: #4b3c62;
   --display: "Pirata One", "Times New Roman", serif;
   --body: "Crimson Pro", Georgia, serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -20,8 +24,8 @@
 body {
   background: var(--night);
   background-image:
-    radial-gradient(circle at 85% 6%, rgba(255,194,92,.18) 0 48px, transparent 120px),
-    radial-gradient(ellipse at 50% 120%, rgba(242,131,43,.12), transparent 60%);
+    radial-gradient(circle at 85% 6%, rgba(255,194,92,.22) 0 48px, transparent 120px),
+    radial-gradient(ellipse at 50% 120%, rgba(242,131,43,.16), transparent 60%);
   color: var(--ink);
   font-family: var(--body);
   font-size: 18px;
@@ -72,7 +76,7 @@ button { font: inherit; cursor: pointer; }
 .vault { border-radius: 14px; padding: 22px 20px; text-align: center; display: grid; gap: 10px; justify-items: center; border: 2px dashed var(--line); color: var(--muted); }
 .vault h2 { font-family: var(--display); font-weight: 400; font-size: 32px; margin: 0; line-height: 1.1; }
 .vault p { margin: 0; }
-.vault .ask { font-size: 24px; color: var(--ink); }
+.vault .ask { font-size: 22px; color: var(--ink); max-width: 30ch; }
 .vault.open { border: 2px solid var(--glow); background: radial-gradient(circle at 50% 0%, rgba(255,194,92,.16), transparent 70%), var(--ledger); color: var(--ink); animation: rise .6s ease; }
 .vault.open h2 { color: var(--glow); }
 @keyframes rise { from { transform: translateY(8px); opacity: .4 } to { transform: none; opacity: 1 } }
@@ -105,6 +109,7 @@ html, body { overflow-x: clip; }
 .rattle { animation: rattle .08s linear 9; }
 @keyframes rattle { 0% { transform: translate(0,0) rotate(0); } 25% { transform: translate(-2px,1px) rotate(-1.5deg); } 50% { transform: translate(2px,-1px) rotate(1.5deg); } 75% { transform: translate(-1px,-1px) rotate(-1deg); } 100% { transform: translate(1px,1px) rotate(1deg); } }
 
+
 footer { display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; text-align: center; font-size: 22px; color: var(--muted); font-style: italic; }
 .pumpkin { width: 30px; height: 28px; flex: none; }
 
@@ -112,6 +117,8 @@ footer { display: flex; justify-content: center; align-items: center; gap: 10px;
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 </style>
+</head>
+<body>
 
 <main>
   <header>
@@ -131,8 +138,8 @@ footer { display: flex; justify-content: center; align-items: center; gap: 10px;
   <section class="vault" id="vault" aria-live="polite">
     <span class="zzz" aria-hidden="true">z z Z</span>
     <h2>Chester sleeps now.</h2>
-    <p class="ask">Have you found all the Tricks and Treats?</p>
-    <p class="note" id="vault-msg">Once you found all caches, check them off and enter your caching name to wake Chester.<br>Scratch at his door too early and you'll get nothing but a yawn.</p>
+    <p class="ask">Once you have found all Chester's Tricks and Treats, enter your caching name to wake Chester. If your name appears on his scroll, he will grant you access to the Bonus.</p>
+    <p class="note" id="vault-msg">The scroll updates once a day &ndash; allow time for verification.</p>
     <form class="claim" id="claim" novalidate>
       <label for="cacher">Your caching name</label>
       <input type="text" id="cacher" name="cacher" autocomplete="nickname" maxlength="60" placeholder="e.g. NightOwl42" disabled>
@@ -159,8 +166,8 @@ footer { display: flex; justify-content: center; align-items: center; gap: 10px;
   <footer><span>Happy haunting from Chester.</span><svg class="pumpkin" viewBox="0 0 32 30" aria-hidden="true"><path d="M16 7c-1-3 0-5 2-6" fill="none" stroke="#5a8a3a" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="9.5" cy="18" rx="7.5" ry="10" fill="#e8741f"/><ellipse cx="22.5" cy="18" rx="7.5" ry="10" fill="#e8741f"/><ellipse cx="16" cy="18" rx="8" ry="11" fill="#f2832b"/><path d="M16 8v20M10 9.5c-2 5-2 12 0 17M22 9.5c2 5 2 12 0 17" fill="none" stroke="#c75f14" stroke-width="1" opacity=".7"/></svg></footer>
 </main>
 
+
 <script>
-// Claims are emailed to the cache owner through FormSubmit (works once hosted, e.g. on GitHub Pages).
 const CLAIM_ENDPOINT = "https://formsubmit.co/ajax/b251905bb2f9806acad9aee4dba19b40";
 
 const caches = [
@@ -443,5 +450,7 @@ boxes.forEach((b, i) => {
     fx(caches[i] === "Skeleton Simon" ? label : label.querySelector(".box"));
   });
 });
+
 </script>
-</body></html>
+</body>
+</html>

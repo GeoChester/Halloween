@@ -81,6 +81,7 @@ button { font: inherit; cursor: pointer; }
 .vault h2 { font-family: var(--display); font-weight: 400; font-size: 32px; margin: 0; line-height: 1.1; }
 .vault p { margin: 0; }
 .vault .ask { font-size: 22px; color: var(--ink); max-width: 30ch; }
+.vault .ask .only { display: block; margin-top: 10px; color: #e0a020; font-weight: 600; }
 .vault.open { border: 2px solid var(--glow); background: radial-gradient(circle at 50% 0%, rgba(255,194,92,.16), transparent 70%), var(--ledger); color: var(--ink); animation: rise .6s ease; }
 .vault.open h2 { color: var(--glow); }
 @keyframes rise { from { transform: translateY(8px); opacity: .4 } to { transform: none; opacity: 1 } }
@@ -142,7 +143,7 @@ footer { display: flex; justify-content: center; align-items: center; gap: 10px;
   <section class="vault" id="vault" aria-live="polite">
     <span class="zzz" aria-hidden="true">z z Z</span>
     <h2>Chester sleeps now.</h2>
-    <p class="ask">Once you have found all Chester's Tricks and Treats, enter your caching name to wake Chester. If your name appears on his scroll, he will grant you access to the Bonus.</p>
+    <p class="ask">Once you have signed the log on all Chester's Tricks and Treats listed below, you can claim access to the bonus cache. Enter your geocaching name, check all the boxes, submit the form and Chester will grant you access. <span class="only">Only those approved by Chester may log the Halloween Bonus cache.</span></p>
     <p class="note" id="vault-msg">The scroll updates once a day &ndash; allow time for verification.</p>
     <form class="claim" id="claim" novalidate>
       <label for="cacher">Your caching name</label>
@@ -162,7 +163,7 @@ footer { display: flex; justify-content: center; align-items: center; gap: 10px;
       <div class="bar"><span id="bar"></span></div>
     </div>
     <ul id="list"></ul>
-    <div class="final"><label for="allFound"><input type="checkbox" id="allFound"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="#120d1c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="name">I found all Trick and Treat geocaches.</span></label></div>
+    <div class="final"><label for="allFound"><input type="checkbox" id="allFound"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="#120d1c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="name">I have found all Trick and Treat geocaches.</span></label></div>
     <div class="actions"><button class="ghost-btn" id="clear" type="button">Clear all</button></div>
   </section>
 

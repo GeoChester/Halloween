@@ -81,6 +81,7 @@ button { font: inherit; cursor: pointer; }
 .vault h2 { font-family: var(--display); font-weight: 400; font-size: 32px; margin: 0; line-height: 1.1; }
 .vault p { margin: 0; }
 .vault .ask { font-size: 22px; color: var(--ink); max-width: 30ch; }
+.vault .ask .warn { display: block; margin-bottom: 10px; color: #e0a020; font-weight: 600; font-size: .9em; }
 .vault .ask .only { display: block; margin-top: 10px; color: #e0a020; font-weight: 600; }
 .vault.open { border: 2px solid var(--glow); background: radial-gradient(circle at 50% 0%, rgba(255,194,92,.16), transparent 70%), var(--ledger); color: var(--ink); animation: rise .6s ease; }
 .vault.open h2 { color: var(--glow); }
@@ -90,7 +91,8 @@ button { font: inherit; cursor: pointer; }
 .copy:hover { background: var(--glow); }
 .lock { width: 34px; height: 34px; }
 
-.claim { display: grid; gap: 10px; width: 100%; max-width: 360px; text-align: left; }
+.claim { display: grid; gap: 10px; width: 100%; max-width: 360px; text-align: left; justify-self: center; }
+.claim label[for="cacher"] { font-family: var(--body); font-size: 20px; font-style: italic; letter-spacing: 0; text-transform: none; color: var(--ink); }
 .claim label { display: block; padding: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: default; }
 .claim label:hover { background: none; }
 .claim input[type="text"] { font: inherit; font-size: 18px; width: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--night); color: var(--ink); }
@@ -143,30 +145,21 @@ footer { display: flex; justify-content: center; align-items: center; gap: 10px;
   <section class="vault" id="vault" aria-live="polite">
     <span class="zzz" aria-hidden="true">z z Z</span>
     <h2>Chester sleeps now.</h2>
-    <p class="ask">Once you have signed the log on all Chester's Tricks and Treats listed below, you can claim access to the bonus cache. Enter your geocaching name, check all the boxes, submit the form and Chester will grant you access. <span class="only">Only those approved by Chester may log the Halloween Bonus cache.</span></p>
-    <p class="note" id="vault-msg">The scroll updates once a day &ndash; allow time for verification.</p>
-    <form class="claim" id="claim" novalidate>
-      <label for="cacher">Your caching name</label>
+    <p class="ask"><span class="warn">READ THIS PAGE CAREFULLY:</span>Time for YOU to work! Want access to the Halloween Bonus cache? You must qualify by finishing the entire series first: Find ALL sixteen caches, then claim access. <span class="only">Only those approved by Chester may hunt for and log the Halloween Bonus cache.</span></p>
+  </section>
+
+  <section class="ledger" aria-label="Cache checklist">
+    <ul id="list"></ul>
+    <div class="final"><label for="allFound"><input type="checkbox" id="allFound"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="#120d1c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="name">I swear on my geocaching honour that I have completed the Chester's Tricks and Treats series: I have found the 16 caches listed above and I have signed all the logbooks.</span></label></div>
+  </section>
+
+  <form class="claim" id="claim" novalidate>
+      <label for="cacher">signed:</label>
       <input type="text" id="cacher" name="cacher" autocomplete="nickname" maxlength="60" placeholder="e.g. NightOwl42" disabled>
       <input type="text" class="hp" id="honey" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button class="copy" id="wake" type="submit" disabled>Wake Chester</button>
       <p class="err" id="err" hidden></p>
-    </form>
-  </section>
-
-  <section class="ledger" aria-label="Cache checklist">
-    <div class="progress">
-      <div class="progress-row">
-        <span class="progress-label">Caches found</span>
-        <span class="count" id="count" aria-live="polite">0 of 16</span>
-      </div>
-      <div class="bar"><span id="bar"></span></div>
-    </div>
-    <ul id="list"></ul>
-    <div class="final"><label for="allFound"><input type="checkbox" id="allFound"><span class="box"><svg viewBox="0 0 16 16" fill="none" stroke="#120d1c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg></span><span class="name">I have found all Trick and Treat geocaches.</span></label></div>
-    <div class="actions"><button class="ghost-btn" id="clear" type="button">Clear all</button></div>
-  </section>
-
+  </form>
 
   <footer><span>Happy haunting from Chester.</span><svg class="pumpkin" viewBox="0 0 32 30" aria-hidden="true"><path d="M16 7c-1-3 0-5 2-6" fill="none" stroke="#5a8a3a" stroke-width="2.2" stroke-linecap="round"/><ellipse cx="9.5" cy="18" rx="7.5" ry="10" fill="#e8741f"/><ellipse cx="22.5" cy="18" rx="7.5" ry="10" fill="#e8741f"/><ellipse cx="16" cy="18" rx="8" ry="11" fill="#f2832b"/><path d="M16 8v20M10 9.5c-2 5-2 12 0 17M22 9.5c2 5 2 12 0 17" fill="none" stroke="#c75f14" stroke-width="1" opacity=".7"/></svg></footer>
 </main>
@@ -208,8 +201,6 @@ function update() {
   const found = boxes.filter(b => b.checked).length;
   const total = boxes.length;
   const all = found === total && allFound.checked;
-  document.getElementById("count").textContent = `${found} of ${total}`;
-  document.getElementById("bar").style.width = (found / total * 100) + "%";
   nameInput.disabled = !all;
   wake.disabled = !all || !nameInput.value.trim();
   vault.classList.toggle("open", all);
@@ -221,10 +212,8 @@ function wakeUp() {
   document.getElementById("awakeCat").hidden = false;
   boxes.forEach(b => { b.checked = true; b.disabled = true; });
   allFound.checked = true; allFound.disabled = true;
-  document.getElementById("clear").disabled = true;
-  document.getElementById("count").textContent = `${boxes.length} of ${boxes.length}`;
-  document.getElementById("bar").style.width = "100%";
   vault.classList.add("open");
+  form.hidden = true;
   vault.innerHTML = `
     <span class="zzz" aria-hidden="true">· · ·</span>
     <h2>Chester is awake!</h2>
@@ -321,7 +310,6 @@ if (new URLSearchParams(location.search).get("claimed") === "1") {
 nameInput.addEventListener("input", update);
 boxes.forEach(b => b.addEventListener("change", update));
 allFound.addEventListener("change", update);
-document.getElementById("clear").addEventListener("click", () => { boxes.forEach(b => b.checked = false); allFound.checked = false; update(); });
 // ---------- Effects for special caches ----------
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 let actx = null;
